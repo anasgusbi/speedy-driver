@@ -1,0 +1,13 @@
+{
+  "appId": "ly.speedy.driver",
+  "appName": "سبيدي مندوب",
+  "webDir": "www",
+  "android": {
+    "useLegacyBridge": true,
+    "backgroundColor": "#0a0e0c"
+  },
+  "plugins": {
+    "CapacitorHttp": { "enabled": true },
+    "SplashScreen": { "launchShowDuration": 600, "backgroundColor": "#0a0e0c" }
+  }
+}
