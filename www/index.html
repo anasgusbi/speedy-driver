@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0a0e0c">
+<title>سبيدي مندوب</title>
+<style>
+:root{--bg:#0a0e0c;--s1:#111714;--s2:#161e1a;--s3:#1d2722;--bd:#25322b;--tx:#ecf3ef;--mu:#8ea197;--g:#00A86B;--g2:#19c98a;--gd:#d4af37;--red:#ef5350;--amb:#f5a524}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',Tahoma,system-ui,sans-serif;font-size:16px;min-height:100%}
+button,input{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+.wrap{max-width:480px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));min-height:100vh;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;align-items:center;gap:12px}
+.top img{width:46px;height:46px;border-radius:12px}
+.top b{font-size:20px;font-weight:800;display:block}
+.top small{color:var(--mu);font-size:12.5px}
+.top .r{margin-inline-start:auto;text-align:left}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:16px}
+.mu{color:var(--mu);font-size:13.5px;line-height:1.7}
+.inp{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:13px 14px;outline:none;font-size:17px}
+.inp:focus{border-color:var(--g)}
+label{display:block;color:var(--mu);font-size:13px;font-weight:600;margin:12px 0 6px}
+.btn{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:14px;font-weight:800;font-size:17px;background:var(--s3);border:1px solid var(--bd)}
+.btn.p{background:var(--g);border-color:var(--g);color:#fff}
+.btn.d{background:rgba(239,83,80,.14);border-color:rgba(239,83,80,.45);color:#ff7b78}
+.btn.sm{padding:9px 12px;font-size:14px;border-radius:10px;width:auto;font-weight:700}
+.btn:disabled{opacity:.45}
+.big{height:150px;width:150px;border-radius:50%;margin:8px auto;font-size:20px;flex-direction:column;box-shadow:0 0 0 10px rgba(0,168,107,.12)}
+.big.d{box-shadow:0 0 0 10px rgba(239,83,80,.12)}
+.big span{font-size:13px;font-weight:600;opacity:.85}
+.seg{display:flex;background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:4px;gap:4px}
+.seg button{flex:1;padding:10px;border-radius:9px;font-weight:700;color:var(--mu)}
+.seg button.on{background:var(--g);color:#fff}
+.row{display:flex;align-items:center;gap:10px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--s2);border-radius:12px;padding:10px 12px}
+.stat .l{color:var(--mu);font-size:12px;font-weight:600}
+.stat .v{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+.pulse{width:12px;height:12px;border-radius:50%;background:var(--g2);box-shadow:0 0 0 0 rgba(25,201,138,.6);animation:pl 1.6s infinite}
+@keyframes pl{to{box-shadow:0 0 0 14px rgba(25,201,138,0)}}
+.chip{display:inline-block;padding:3px 10px;border-radius:99px;font-size:12.5px;font-weight:700}
+.c-g{background:rgba(0,168,107,.16);color:var(--g2)}.c-a{background:rgba(245,165,36,.15);color:var(--amb)}.c-r{background:rgba(239,83,80,.15);color:#ff7b78}.c-m{background:var(--s3);color:var(--mu)}
+.err{color:#ff7b78;font-size:14px;min-height:22px;margin-top:10px;text-align:center}
+.note{background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.3);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.7;color:#e6d39a}
+.center{text-align:center}
+.spin{width:36px;height:36px;border:3px solid var(--s3);border-top-color:var(--g);border-radius:50%;animation:sp .8s linear infinite;margin:20px auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+#toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:#222c27;border:1px solid var(--bd);padding:10px 18px;border-radius:12px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:60;max-width:90vw;text-align:center}
+#toast.on{opacity:1}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:flex-end;justify-content:center;z-index:50;padding:16px}
+.modal.hidden{display:none}
+.sheet{background:var(--s1);border:1px solid var(--bd);border-radius:18px;width:100%;max-width:480px;padding:20px}
+.sheet h3{font-size:18px;margin-bottom:8px}
+.sheet .row{margin-top:16px}
+.foot{margin-top:auto;text-align:center;color:var(--mu);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="spin"></div></div>
+<div id="modal" class="modal hidden"><div class="sheet" id="sheet"></div></div>
+<div id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
