@@ -1,0 +1,80 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Install
+        run: npm install
+
+      - name: Build web app
+        run: npm run build
+
+      - name: Create Android project
+        run: npx cap add android
+
+      - name: App icon and splash
+        continue-on-error: true
+        run: npx --yes @capacitor/assets@4 generate --android --iconBackgroundColor '#0a0e0c' --iconBackgroundColorDark '#0a0e0c' --splashBackgroundColor '#0a0e0c' --splashBackgroundColorDark '#0a0e0c'
+
+      - name: Patch Android project
+        run: node scripts/patch-android.mjs
+
+      - name: Sync
+        run: npx cap sync android
+
+      - name: Build APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - name: Sign APK
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KS_B64" ]; then
+            echo "::warning::No signing key in secrets — using a temporary key. Drivers will have to uninstall before each update."
+            KS_PASS=temporary123
+            keytool -genkeypair -v -keystore ks.jks -alias speedy -keyalg RSA -keysize 2048 -validity 10000 -storepass "$KS_PASS" -keypass "$KS_PASS" -dname "CN=Speedy, O=Speedy, C=LY"
+          else
+            echo "$KS_B64" | base64 -d > ks.jks
+          fi
+          BT=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -1)
+          $BT/zipalign -p -f 4 android/app/build/outputs/apk/release/app-release-unsigned.apk aligned.apk
+          $BT/apksigner sign --ks ks.jks --ks-key-alias speedy --ks-pass "pass:$KS_PASS" --key-pass "pass:$KS_PASS" --out speedy-driver.apk aligned.apk
+          $BT/apksigner verify speedy-driver.apk
+          rm -f ks.jks
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: speedy-driver-apk
+          path: speedy-driver.apk
+
+      - name: Publish release (fixed download link)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: سبيدي مندوب 1.0.${{ github.run_number }}
+          files: speedy-driver.apk
+          make_latest: true
